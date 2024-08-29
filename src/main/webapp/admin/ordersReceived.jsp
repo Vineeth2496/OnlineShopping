@@ -1,4 +1,9 @@
-
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.Statement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="Model.DAO"%>
+<%@include file="adminHeader.jsp" %>
+<%@include file="../footer.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -11,13 +16,25 @@
 </head>
 <body>
 <div style="color: white; text-align: center; font-size: 30px;">Orders Received <i class="fas fa-archive"></i></div>
-
+<%
+String msg=request.getParameter("msg");
+if("cancel".equals(msg))
+{
+%>
 <h3 class="alert">Order Cancel Successfully!</h3>
-
+<%} %>
+<%
+if("delivered".equals(msg))
+{
+%>
 <h3 class="alert">Successfully Updated!</h3>
-
+<%} %>
+<%
+if("invalid".equals(msg))
+{
+%>
 <h3 class="alert">Some thing went wrong! Try Again!</h3>
-
+<%} %>
 
 <table id="customers">
           <tr>
@@ -38,25 +55,38 @@
               <th scope="col">Order Delivered <i class='fas fa-dolly'></i></i></th>
           </tr>
         
-       
+       <%
+       int sno=0;
+       try{
+    	   Connection con=DAO.getCon();
+    	   Statement st=con.createStatement();
+    	   ResultSet rs=st.executeQuery("select * from cart inner join product where cart.product_id=product_id and cart.orderDate is not NULL and cart.status='processing'");
+    	   while(rs.next())
+    	   {
+       %>
           <tr>
-          <td></td>
-            <td></td>
-            <td></td>
-            <td><i class="fa fa-inr"></i>  </td>
-                <td></td>
-               <td></td>
-                <td></td>
-                 <td></td>
-             <td></td>
-              <td></td>
-               <td></td>
-               <td></td>
-               <td></td>
-               <td><a href="">Cancel <i class='fas fa-window-close'></i></a></td>
-                <td><a href="">Delivered <i class='fas fa-dolly'></i></i></a></td>
+          <td><%=rs.getString(10) %></td>
+            <td><%=rs.getString(17) %></td>
+            <td><%=rs.getString(3) %></td>
+            <td><i class="fa fa-inr"></i> <%=rs.getString(5) %>  </td>
+                <td><%=rs.getString(6) %></td>
+               <td><%=rs.getString(7) %></td>
+                <td><%=rs.getString(8) %></td>
+                 <td><%=rs.getString(9) %></td>
+             <td><%=rs.getString(11) %></td>
+              <td><%=rs.getString(12) %></td>
+               <td><%=rs.getString(13) %></td>
+               <td><%=rs.getString(14) %></td>
+               <td><%=rs.getString(15) %></td>
+               <td><a href="cancelOrdersAction.jsp?id=<%=rs.getString(2)%>&email=<%=rs.getString(1)%>">Cancel <i class='fas fa-window-close'></i></a></td>
+                <td><a href="deliveredOrdersAction.jsp?id=<%=rs.getString(2)%>&email=<%=rs.getString(1)%>">Delivered <i class='fas fa-dolly'></i></i></a></td>
             </tr>
-         
+         <%
+    	   }
+       }catch(Exception e){
+    	   e.printStackTrace();
+       }
+         %>
         </table>
       <br>
       <br>
